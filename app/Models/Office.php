@@ -14,7 +14,7 @@ class Office extends Model
 
     const APPROVAL_PENDING = 1;
     const APPROVAL_APPROVED = 2;
-    const APPROVAL_REJECTED = 3;
+    /* const APPROVAL_REJECTED = 3; */
 
     //Gul here
     //We are using cast here 
