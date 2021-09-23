@@ -76,6 +76,45 @@ class OfficeControllerTest extends TestCase
       }
 
 
+
+        /**
+      * @test
+      */
+      public function itListAllOfficesIncludingHiddenAndUnapprovedIfFilteringForCurrentLoggedInUser()
+      {
+        $user =User::factory()->create();
+        //creating 3 offices which are by default approved 
+         Office::factory(3)->for($user)->create();
+
+         //creating office which is hiddent
+          Office::factory()->hidden()->for($user)->create();
+
+          //creating office which is not_Approved
+          Office::factory()->pending()->for($user)->create();
+
+           //assume Logged in
+           $this->actingAs($user);
+          $response = $this->get('/api/offices?user_id='.$user->id);
+          $response->assertOk(200);
+
+          $response->assertJsonCount(5,'data');
+      
+
+
+
+      }
+
+
+
+
+
+
+
+
+
+
+
+
       /**
        * @test
        */
@@ -259,7 +298,7 @@ class OfficeControllerTest extends TestCase
 
      {
          Notification::fake();
-        $admin =User::factory()->create(['name' =>'Gul']);
+        $admin =User::factory()->create(['is_admin' =>true]);
         $user = User::factory()->createQuietly();
         $tag1 =Tag::factory()->create();
         $tag2 =Tag::factory()->create();
@@ -362,6 +401,94 @@ class OfficeControllerTest extends TestCase
 
     }
 
+
+
+
+         /**
+     * @test
+     */
+    public function ItUpdatesTheFeatureImageOfAnOffice ()
+
+    {
+       $user = User::factory()->create();
+       
+            
+       $office =Office::factory()->for($user)->create();
+
+       $image =$office->images()->create([
+            'path'  =>'image.jpg'
+
+       ]);
+
+       $this->actingAs($user);
+
+         $response = $this->putJson('/api/offices/'.$office->id,[
+            
+
+            //we are checking sync method here testing it
+             'featured_image_id'  =>$image->id,
+           
+            
+       ]);
+
+      
+
+          $response->assertOk()
+                    ->assertJsonPath('data.featured_image_id' ,$image->id);   
+                    
+            /*  dd(
+        $response->json()
+
+       );   */     
+
+
+    }
+
+
+
+
+         /**
+     * @test
+     */
+    public function ItDoesNotUpdateAFeaturedImageThatBelongsToAnotherOffice ()
+
+    {
+       $user = User::factory()->create();
+       
+            
+       $office1 =Office::factory()->for($user)->create();
+       $office2 =Office::factory()->create();
+
+       $image =$office2->images()->create([
+            'path'  =>'image.jpg'
+
+       ]);
+
+       $this->actingAs($user);
+
+         $response = $this->putJson('/api/offices/'.$office1->id,[
+            
+
+            //we are checking sync method here testing it
+             'featured_image_id'  =>$image->id,
+           
+            
+       ]);
+
+      
+
+          $response->assertUnprocessable();   
+                    
+            /*  dd(
+        $response->json()
+
+       );   */     
+
+
+    }
+
+
+
         /**
      * @test
      */
@@ -398,7 +525,8 @@ class OfficeControllerTest extends TestCase
     public function itMarksTheOfficeAsPendingIfDirty ()
 
     {
-       $admin =User::factory()->create(['name' =>'Gul']);
+      // $admin =User::factory()->create(['name' =>'Gul']);
+       $admin =User::factory()->create(['is_admin' =>true]);
        $user = User::factory()->create();
        Notification::fake();
      

@@ -48,6 +48,12 @@ class Office extends Model
 
 
     }
+    public function featuredImage()
+    {
+    
+    return $this->belongsTo(Image::class ,'featured_image_id');
+    
+    }
     public function tags()
     {
 

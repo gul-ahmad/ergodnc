@@ -24,6 +24,10 @@ class OfficeValidator{
               'lng' => [Rule::when($office->exists,'sometimes'),'required','numeric'],
               'address_line1' => [Rule::when($office->exists,'sometimes'),'required','string'],
               'price_per_day' => [Rule::when($office->exists,'sometimes'),'required','integer' ,'min:100'],
+
+               //checking that image exist and its already belong to an office
+               //to become or marked as an featured image
+              'featured_image_id' =>[Rule::exists('images','id')->where('resource_type','office')->where('resource_id',$office->id)],
               
               'hidden' => ['bool'],
               'monthly_discount' => ['integer','min:0','max:90'],

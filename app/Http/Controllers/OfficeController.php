@@ -31,8 +31,22 @@ class OfficeController extends Controller
   {
 
     $offices =Office::query()
-            ->where('approval_status',Office::APPROVAL_APPROVED)
+           /*  ->where('approval_status',Office::APPROVAL_APPROVED)
+            ->where('hidden',false) */
+
+            //applying the check if the current request/filtering is by the user who
+            //is logged in show him/her all the offices 
+
+            //Or otherwise apply the check to show only approved and non hidden
+
+            ->when(request('user_id') && auth()->user() && request('user_id')==auth()->id(),
+            fn($builder) =>$builder,
+
+            fn($builder) =>$builder->where('approval_status',Office::APPROVAL_APPROVED)
             ->where('hidden',false)
+            
+            )
+
             ->when(request('user_id'),fn ($builder) => $builder->whereUserId(request('user_id')))
             ->when(request('visitor_id'),
             fn(EloquentBuilder $builder)
@@ -142,7 +156,8 @@ class OfficeController extends Controller
           
 
           });
-          Notification::send(User::firstWhere('name','Gul'),new OfficePendingApproval($office));
+         // Notification::send(User::firstWhere('name','Gul'),new OfficePendingApproval($office));
+          Notification::send(User::where('is_admin',true)->get(),new OfficePendingApproval($office));
            
          /*  $office =auth()->user()->offices()->create(
            
@@ -228,7 +243,7 @@ class OfficeController extends Controller
 
                if($requiresReview){
 
-                Notification::send(User::firstWhere('name','Gul'),new OfficePendingApproval($office));
+                Notification::send(User::where('is_admin',true)->get(),new OfficePendingApproval($office));
 
               }
 
