@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\UserReservationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +22,14 @@ Route::delete('/offices/{office}', [\App\Http\Controllers\OfficeController::clas
 
 Route::post('/offices/{office}/images',[\App\Http\Controllers\OfficeImageController::class,'store'])->middleware(['auth:sanctum' ,'verified']);
 
-Route::delete('/offices/{office}/images/{image}', [\App\Http\Controllers\OfficeImageController::class, 'delete'])->middleware(['auth:sanctum', 'verified']);
+Route::delete('/offices/{office}/images/{image:id}', [\App\Http\Controllers\OfficeImageController::class, 'delete'])->middleware(['auth:sanctum', 'verified']);
+
+//User Reservations
+
+Route::get('/reservations' ,[\App\Http\Controllers\UserReservationController::class, 'index'])->middleware(['auth:sanctum','verified']);
+
+//User/Host Reservations
+
+//Route::get('/reservations' ,[\App\Http\Controllers\UserReservationController::class, 'index'])->middleware(['auth:sanctum','verified']);
 
 

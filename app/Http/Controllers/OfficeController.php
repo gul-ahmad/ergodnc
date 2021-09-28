@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Validators\OfficeValidator;
 use App\Notifications\OfficePendingApproval;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
@@ -269,7 +270,16 @@ class OfficeController extends Controller
               throw_if(
                 $office->reservations()->where('status', Reservation::STATUS_ACTIVE)->exists(),
                 ValidationException::withMessages(['office' => 'Cannot delete this office!'])
-            );
+                );
+                  //Here we are deleting all the images attach to the office which we are deleting
+                $office->images()->each(function($image){
+                 
+                  Storage::delete($image->path);
+
+                  $image->delete();
+
+
+                });
 
               $office->delete();
 

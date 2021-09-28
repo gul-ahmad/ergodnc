@@ -44,9 +44,13 @@ class OfficeImageController extends Controller
 
         $this->authorize('update', $office);
 
-        throw_if($image->resource_type != 'office' || $image->resource_id != $office->id,
+         //checking here that the image is not attached to office 
+         //commented this part as we have done implicit binding i-e in the Route by image:id
+           //Route::delete('/offices/{office}/images/{image:id}', [\App\Http\Controllers\OfficeImageController::class, 'delete'])->middleware(['auth:sanctum', 'verified']);
+
+      /*   throw_if($image->resource_type != 'office' || $image->resource_id != $office->id,
             ValidationException::withMessages(['image' => 'Cannot delete this image.'])
-        );
+        ); */
 
         throw_if($office->images()->count() == 1,
             ValidationException::withMessages(['image' => 'Cannot delete the only image.'])
@@ -55,8 +59,16 @@ class OfficeImageController extends Controller
         throw_if($office->featured_image_id == $image->id,
             ValidationException::withMessages(['image' => 'Cannot delete the featured image.'])
         );
+        
 
-        Storage::disk('public')->delete($image->path);
+        //removed disk public as the laravel default storage is local
+        //so we are using it and not specifying it
+        //so we easily switch to S3 storage on Production
+        //and to public on staging 
+        //we change this line from local to public in .env FILESYSTEM_DRIVER=public
+        //Storage::disk('public')->delete($image->path);
+
+        Storage::delete($image->path);
 
         $image->delete();
     }
