@@ -25,11 +25,15 @@ use Illuminate\Support\Facades\DB;
 
 use Illuminate\Validation\Rule as ValidationRule;
 use Illuminate\Validation\ValidationException;
+use PharIo\Manifest\Author;
 
 class OfficeController extends Controller
 {
   public function index()
   {
+   
+
+   //dd(auth()->user());
 
     $offices =Office::query()
            /*  ->where('approval_status',Office::APPROVAL_APPROVED)
