@@ -39,12 +39,12 @@ class HostReservationController extends Controller
         )->when(request('status'),
             fn($query) => $query->where('status', request('status'))
         )->when(request('from_date') && request('to_date'),
+        /* //we can call this function in this way 
+        //Or below PHP 8 ways which is used Below
             function ($query) {
-                $query->where(function ($query) {
-                    return $query->whereBetween('start_date', [request('from_date'), request('to_date')])
-                        ->orWhereBetween('end_date', [request('from_date'), request('to_date')]);
-                });
-            }
+                $query->BetweenDates(request('from_date'),request('to_date'));
+            } */
+            fn($query) => $query->BetweenDates(request('from_date'),request('to_date'))
         )
         ->with(['office.featuredImage'])
         ->paginate(20);
