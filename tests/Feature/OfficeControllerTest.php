@@ -89,7 +89,7 @@ class OfficeControllerTest extends TestCase
         //creating 3 offices which are by default approved 
          Office::factory(3)->for($user)->create();
 
-         //creating office which is hiddent
+         //creating office which is hidden
           Office::factory()->hidden()->for($user)->create();
 
           //creating office which is not_Approved
@@ -184,19 +184,24 @@ class OfficeControllerTest extends TestCase
         public function itIncludesImagesTagsAndUser()
         {
 
-             $user =User::factory()->create();
+             //$user =User::factory()->create();
 
-             $tag =Tag::factory()->create();
+             //$tag =Tag::factory()->create();
 
-             $office =Office::factory()->for($user)->create();
+            // $office =Office::factory()->for($user)->create();
                
 
              //attacing tags to the office using relationship eloquent
-             $office->tags()->attach($tag);
+            // $office->tags()->attach($tag);
 
-             $office->images()->create(['path'=>'image.jpj']);
+           //  $office->images()->create(['path'=>'image.jpj']);
+
+
+             $user = User::factory()->create();
+             Office::factory()->for($user)->hasTags(1)->hasImages(1)->create();
 
              $response = $this->get('/api/offices');
+             $response->dump();
 
              $response->assertOk();
              //verifying assert have tags and images

@@ -62,10 +62,17 @@ class OfficeController extends Controller
               request('lat') && request('lng'),
               fn ($builder) =>$builder->NearestTo(request('lat'),request('lng')),
               fn ($builder) => $builder->OrderBy('id','ASC')
-              
-              
-              
               )
+              //Gul here I am not cleared about this why count is used in it
+            ->when(request('tags'),
+              fn($builder) =>$builder->whereHas(
+                'tags' ,fn($builder) =>$builder->WhereIn('id' ,request('tags')),
+                '=',
+                count(request('tags'))
+                
+                )
+            
+             )
             ->with(['images' ,'tags' ,'user'])
             ->withCount(['reservations' =>fn($builder)=>$builder->where('status',Reservation::STATUS_ACTIVE)])
             ->paginate(20);

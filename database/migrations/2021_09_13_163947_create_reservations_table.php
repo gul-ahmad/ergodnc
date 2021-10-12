@@ -21,6 +21,7 @@ class CreateReservationsTable extends Migration
             $table->tinyInteger('status')->default(1);
             $table->date('start_date');
             $table->date('end_date');
+            $table->text('wifi_password')->nullable();
             $table->index(['user_id', 'status']);
             $table->index(['office_id', 'status']);
             $table->index(['office_id', 'status', 'start_date', 'end_date']);
